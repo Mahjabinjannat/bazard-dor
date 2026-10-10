@@ -1,5 +1,3 @@
-// src/lib/categories.ts
-
 import { cacheLife } from "next/cache";
 import { fetchWithFallback } from "./api";
 import type { ICategories } from "@/types/categories";
