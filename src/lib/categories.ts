@@ -1,11 +1,12 @@
 import { cacheLife } from "next/cache";
-import { fetchWithFallback } from "./api";
-import type { ICategories } from "@/types/categories";
 
-export async function getCategories(): Promise<ICategories[]> {
+import type { ICategory } from "@/types/category";
+import { fetchAPI } from "./api";
+
+export async function getCategories(): Promise<ICategory[]> {
   "use cache";
 
   cacheLife("hours");
 
-  return fetchWithFallback<ICategories[]>("categories");
+  return fetchAPI<ICategory[]>("categories");
 }
