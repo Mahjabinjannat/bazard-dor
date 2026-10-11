@@ -6,6 +6,7 @@ import Marquee from "@/components/shared/Marquee";
 import { Suspense } from "react";
 import Categories from "@/components/shared/Categories";
 import Footer from "@/components/shared/Footer";
+import { Toast } from "@heroui/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
         {children}
         <Footer />
+        <Toast.Provider />
       </body>
     </html>
   );
