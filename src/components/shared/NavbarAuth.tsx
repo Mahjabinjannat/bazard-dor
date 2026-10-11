@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient, useSession } from "@/lib/auth-client";
-import { Button, Dropdown, Label, Spinner } from "@heroui/react";
+import { Button, Dropdown, Label, Spinner, toast } from "@heroui/react";
 import { ChevronDown, LogOut, UserRound, LayoutDashboard } from "lucide-react";
 
 export default function NavbarAuth() {
@@ -18,8 +18,11 @@ export default function NavbarAuth() {
     try {
       const { error } = await authClient.signOut();
 
+      toast.success("Sign out successful");
+
       if (error) {
         console.error("Sign out failed:", error.message);
+        toast.danger("sign out failed");
         return;
       }
 

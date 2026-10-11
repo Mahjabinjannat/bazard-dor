@@ -3,6 +3,7 @@ import ProductSummary from "@/components/productSummaryPage/ProductSummary";
 import { getProductDetails } from "@/lib/productDetails";
 import { IProduct } from "@/types/product";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { GoDash } from "react-icons/go";
 import { IoCaretDown, IoCaretUp } from "react-icons/io5";
 
@@ -14,6 +15,10 @@ const ProductPage = async ({
   const { productId } = await params;
   const productDetails: IProduct = await getProductDetails(productId);
   console.log("p:", productDetails);
+  if (!productDetails) {
+    notFound();
+  }
+
   return (
     <div className="container mx-auto min-h-[600px] mb-16">
       <div className="flex gap-2 mt-6 text-gray-500">

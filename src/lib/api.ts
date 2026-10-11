@@ -12,6 +12,8 @@
 //       signal: AbortSignal.timeout(5000),
 //     });
 
+import { notFound } from "next/navigation";
+
 //     if (!response.ok) {
 //       throw new Error(`HTTP Error: ${response.status} - ${url}`);
 //     }
@@ -39,6 +41,7 @@ export async function fetchAPI<T>(endpoint: string): Promise<T> {
   );
 
   if (!response.ok) {
+    notFound();
     throw new Error(`Failed to fetch ${endpoint}: HTTP ${response.status}`);
   }
 

@@ -124,6 +124,7 @@ import {
   Input,
   Label,
   TextField,
+  toast,
 } from "@heroui/react";
 import Link from "next/link";
 import { signIn } from "@/lib/auth-client";
@@ -147,18 +148,21 @@ const SignInPage = () => {
       rememberMe: true,
       callbackURL: "/",
     });
+    toast.success("Login Successful");
     console.log(resData, error);
   };
   const handleGoogleSignIn = async () => {
     const data = await signIn.social({
       provider: "google",
     });
+    toast.success("Google Login Successful");
     console.log(data);
   };
   const handleGithubSignIn = async () => {
     const data = await signIn.social({
       provider: "github",
     });
+    toast.success("Github login successful");
     console.log(data);
   };
 

@@ -1,6 +1,7 @@
 import CategoryProductList from "@/components/categorizedProductsPage/CategoryProductList";
 import { getCategoriedProduct } from "@/lib/categorizedProduct";
 import { IProduct } from "@/types/product";
+import { notFound } from "next/navigation";
 
 const CategoryPage = async ({
   params,
@@ -11,6 +12,9 @@ const CategoryPage = async ({
   const categorizedProducts: IProduct[] =
     await getCategoriedProduct(categoryId);
   console.log(categorizedProducts);
+  if(!categorizedProducts){
+    notFound();
+  }
 
   return (
     <div className="container mx-auto  min-h-[600px]">
