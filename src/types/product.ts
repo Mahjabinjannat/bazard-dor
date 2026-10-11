@@ -1,3 +1,5 @@
+import { IMarket } from "./market";
+
 export interface IProduct {
   id: number;
   slug: string;
@@ -12,81 +14,8 @@ export interface IProduct {
   lastWeek: number;
   lastMonth: number;
   change: {
-    dir: "up" | "down";
+    dir: "up" | "down" | "flat";
     pct: number;
   };
-  markets: [
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-    {
-      market: string;
-      division: string;
-      min: number;
-      max: number;
-    },
-  ];
+  markets: IMarket[];
 }
