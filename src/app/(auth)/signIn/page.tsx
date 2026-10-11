@@ -131,39 +131,58 @@ import { signIn } from "@/lib/auth-client";
 
 const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries()) as {
-      email: string;
-      password: string;
-    };
-    console.log(data);
-
-    const { data: resData, error } = await signIn.email({
-      email: data.email,
-      password: data.password,
-      rememberMe: true,
-      callbackURL: "/",
-    });
-    toast.success("Login Successful");
-    console.log(resData, error);
+    setIsLoading(true);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const data = Object.fromEntries(formData.entries()) as {
+        email: string;
+        password: string;
+      };
+      console.log(data);
+      const { data: resData, error } = await signIn.email({
+        email: data.email,
+        password: data.password,
+        rememberMe: true,
+        callbackURL: "/",
+      });
+      toast.success("Login Successful");
+      console.log(resData, error);
+    } catch (e) {
+      toast.danger("Login Failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
   const handleGoogleSignIn = async () => {
-    const data = await signIn.social({
-      provider: "google",
-    });
-    toast.success("Google Login Successful");
-    console.log(data);
+    setIsLoading(true);
+    try {
+      const data = await signIn.social({
+        provider: "google",
+      });
+      toast.success("Google Login Successful");
+      console.log(data);
+    } catch (e) {
+      toast.danger("Login Failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
   const handleGithubSignIn = async () => {
-    const data = await signIn.social({
-      provider: "github",
-    });
-    toast.success("Github login successful");
-    console.log(data);
+    setIsLoading(true);
+    try {
+      const data = await signIn.social({
+        provider: "github",
+      });
+      toast.success("Github login successful");
+      console.log(data);
+    } catch (e) {
+      toast.danger("Login Failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -237,6 +256,7 @@ const SignInPage = () => {
 
             <Button
               type="submit"
+              isDisabled={isLoading}
               className="mt-2 flex w-full items-center justify-center rounded-xl bg-[#008C45] py-3.5 text-[15px] font-bold text-white transition hover:bg-[#007338]"
             >
               সাইন ইন করুন
@@ -257,6 +277,7 @@ const SignInPage = () => {
                 type="button"
                 variant="outline"
                 onClick={handleGoogleSignIn}
+                isDisabled={isLoading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
               >
                 <FcGoogle size={21} />
@@ -266,6 +287,7 @@ const SignInPage = () => {
               <Button
                 type="button"
                 variant="outline"
+                isDisabled={isLoading}
                 onClick={handleGithubSignIn}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
               >

@@ -164,54 +164,87 @@ import {
   Input,
   Label,
   TextField,
+  toast,
 } from "@heroui/react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
 import { signIn, signUp } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState("");
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries()) as {
-      name: string;
-      email: string;
-      password: string;
-      confirmPassword: string;
-    };
-    console.log(data);
-
-    if (data.password !== data.confirmPassword) {
+    if (isLoading) {
       return;
     }
 
-    const { data: resData, error } = await signUp.email({
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      callbackURL: "/",
-    });
-    console.log(resData, error);
+    try {
+      const formData = new FormData(e.currentTarget);
+      const data = Object.fromEntries(formData.entries()) as {
+        name: string;
+        email: string;
+        password: string;
+        confirmPassword: string;
+      };
+      console.log(data);
+
+      if (data.password !== data.confirmPassword) {
+        toast.danger("পাসওয়ার্ড দুটি মিলছে না!");
+        return;
+      }
+      setIsLoading(true);
+
+      const { data: resData, error } = await signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        callbackURL: "/",
+      });
+
+      if (error) {
+        toast.danger(error.message || "অ্যাকাউন্ট তৈরি করা যায়নি!");
+        return;
+      }
+
+      toast.success("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!");
+      router.replace("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.danger("সাইন আপ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignIn = async () => {
-    const data = await signIn.social({
+    const { error } = await signIn.social({
       provider: "google",
+      callbackURL: "/",
     });
-    console.log(data);
+
+    if (error) {
+      toast.danger(error.message || "Google দিয়ে সাইন ইন করা যায়নি");
+    }
   };
+
   const handleGithubSignIn = async () => {
-    const data = await signIn.social({
+    const { error } = await signIn.social({
       provider: "github",
+      callbackURL: "/",
     });
-    console.log(data);
+
+    if (error) {
+      toast.danger(error.message || "GitHub দিয়ে সাইন ইন করা যায়নি");
+    }
   };
 
   return (
@@ -348,9 +381,10 @@ export default function SignUpPage() {
 
             <Button
               type="submit"
+              isDisabled={isLoading}
               className="mt-1 flex w-full items-center justify-center rounded-xl bg-[#008C45] py-3.5 text-[15px] font-bold text-white transition hover:bg-[#007338]"
             >
-              অ্যাকাউন্ট তৈরি করুন
+              {isLoading ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "অ্যাকাউন্ট তৈরি করুন"}
             </Button>
 
             <div className="flex w-full items-center gap-4 py-1">
@@ -363,6 +397,7 @@ export default function SignUpPage() {
               <Button
                 type="button"
                 variant="outline"
+                isDisabled={isLoading}
                 onClick={handleGoogleSignIn}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
               >
@@ -373,6 +408,7 @@ export default function SignUpPage() {
               <Button
                 type="button"
                 variant="outline"
+                isDisabled={isLoading}
                 onClick={handleGithubSignIn}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
               >
