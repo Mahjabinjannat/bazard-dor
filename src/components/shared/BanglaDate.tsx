@@ -10,9 +10,5 @@ export default async function BanglaDate() {
     timeZone: "Asia/Dhaka",
   }).format(new Date());
 
-  return (
-    <div className="flex items-center gap-2 text-sm font-medium">
-      <span>{formattedDate}</span>
-    </div>
-  );
+  return <span className="text-[13px] text-gray-500 ">{formattedDate}</span>;
 }
