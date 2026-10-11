@@ -1,16 +1,21 @@
 import { getCategories } from "@/lib/categories";
+import Link from "next/link";
 
-const Marquee = async () => {
+const Categories = async () => {
   const categories = await getCategories();
   console.log(categories);
   return (
     <div>
       <div className="flex gap-6 container mx-auto py-4">
         {categories.map((category) => (
-          <span key={category.id} className="flex gap-2">
-            <span>{category.icon}</span>
+          <Link
+            href={`/category/${category.slug}`}
+            key={category.id}
+            className="flex gap-2 text-[13px] font-semibold"
+          >
+            <span className="">{category.icon}</span>
             {category.nameBn}
-          </span>
+          </Link>
         ))}
       </div>
       <hr className="border-0 border-t border-gray-300" />
@@ -18,4 +23,4 @@ const Marquee = async () => {
   );
 };
 
-export default Marquee;
+export default Categories;
