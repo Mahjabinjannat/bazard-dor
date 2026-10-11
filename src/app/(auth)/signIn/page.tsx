@@ -155,6 +155,12 @@ const SignInPage = () => {
     });
     console.log(data);
   };
+  const handleGithubSignIn = async () => {
+    const data = await signIn.social({
+      provider: "github",
+    });
+    console.log(data);
+  };
 
   return (
     <main className="min-h-screen bg-[#F0F5F0] px-4 py-12 sm:py-16">
@@ -255,6 +261,7 @@ const SignInPage = () => {
               <Button
                 type="button"
                 variant="outline"
+                onClick={handleGithubSignIn}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
               >
                 <FaGithub size={20} />
