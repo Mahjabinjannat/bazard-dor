@@ -169,31 +169,43 @@ import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
+import { signIn, signUp } from "@/lib/auth-client";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState("");
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries()) as {name: string, email: string, password: string, confirmPassword: string};
+    const data = Object.fromEntries(formData.entries()) as {
+      name: string;
+      email: string;
+      password: string;
+      confirmPassword: string;
+    };
     console.log(data);
-
-    // const name = String(formData.get("name") ?? "");
-    // const email = String(formData.get("email") ?? "");
-    // const passwordValue = String(formData.get("password") ?? "");
-    // const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
     if (data.password !== data.confirmPassword) {
       return;
     }
 
-    // Connect Better Auth signup here.
-    // Do not log or display passwords.
-    // console.log("Validated signup:", { name, email });
+    const { data: resData, error } = await signUp.email({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      callbackURL: "/",
+    });
+    console.log(resData, error);
+  };
+
+  const handleGoogleSignIn = async () => {
+    const data = await signIn.social({
+      provider: "google",
+    });
+    console.log(data);
   };
 
   return (
@@ -212,7 +224,7 @@ export default function SignUpPage() {
         </div>
 
         <div className="rounded-[22px] border border-[#DDE7DE] bg-[#FAF9F6] p-6 shadow-[0_10px_35px_rgba(25,70,35,0.05)] sm:p-8">
-          <Form onSubmit={onSubmit} className="flex w-full flex-col gap-5">
+          <Form onSubmit={handleSignUp} className="flex w-full flex-col gap-5">
             <TextField
               isRequired
               name="name"
@@ -235,7 +247,7 @@ export default function SignUpPage() {
 
             <TextField isRequired name="email" type="email" className="w-full">
               <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
-                ইমেইল ঠিকানা
+                ইমেইল
               </Label>
 
               <Input
@@ -345,6 +357,7 @@ export default function SignUpPage() {
               <Button
                 type="button"
                 variant="outline"
+                onClick={handleGoogleSignIn}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
               >
                 <FcGoogle size={21} />

@@ -116,7 +116,7 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import { Eye, EyeOff, LogIn, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Button,
   FieldError,
@@ -126,22 +126,34 @@ import {
   TextField,
 } from "@heroui/react";
 import Link from "next/link";
+import { signIn } from "@/lib/auth-client";
 
 const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData.entries()) as {email: string, password: string};
+    const data = Object.fromEntries(formData.entries()) as {
+      email: string;
+      password: string;
+    };
     console.log(data);
 
-    const email = String(formData.get("email") ?? "");
-    const password = String(formData.get("password") ?? "");
-
-    // Connect Better Auth sign-in here.
-    // Never log or display the password.
+    const { data: resData, error } = await signIn.email({
+      email: data.email,
+      password: data.password,
+      rememberMe: true,
+      callbackURL: "/",
+    });
+    console.log(resData, error);
+  };
+  const handleGoogleSignIn = async () => {
+    const data = await signIn.social({
+      provider: "google",
+    });
+    console.log(data);
   };
 
   return (
@@ -160,7 +172,7 @@ const SignInPage = () => {
         </div>
 
         <div className="rounded-[22px] border border-[#DDE7DE] bg-[#FAF9F6] p-6 shadow-[0_10px_35px_rgba(25,70,35,0.05)] sm:p-8">
-          <Form onSubmit={onSubmit} className="flex w-full flex-col gap-5">
+          <Form onSubmit={handleSignIn} className="flex w-full flex-col gap-5">
             <TextField isRequired name="email" type="email" className="w-full">
               <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
                 ইমেইল ঠিকানা
@@ -233,6 +245,7 @@ const SignInPage = () => {
               <Button
                 type="button"
                 variant="outline"
+                onClick={handleGoogleSignIn}
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
               >
                 <FcGoogle size={21} />
