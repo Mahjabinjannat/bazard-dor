@@ -1,36 +1,329 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# 🛒 বাজার দর | Bazar Dor
 
-First, run the development server:
+### 🇧🇩 Your Everyday Guide to Market Prices in Bangladesh
+
+**A modern, responsive web application for exploring daily essential commodity prices, tracking price changes, and comparing prices across markets in Bangladesh.**
+
+<br />
+
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)
+![React](https://img.shields.io/badge/React-19-149ECA?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Better Auth](https://img.shields.io/badge/Better_Auth-Authentication-242424?style=for-the-badge)
+
+<br />
+
+[🌐 Live Website](YOUR_LIVE_WEBSITE_URL) • [💻 Source Code](YOUR_GITHUB_REPOSITORY_URL)
+
+</div>
+
+---
+
+## 📖 About the Project
+
+**Bazar Dor (বাজার দর)** is a Bengali-language market price information platform designed to make everyday grocery price information easier to access and understand.
+
+The application allows users to browse essential commodities, check their latest prices, monitor price increases or decreases, and compare prices across different markets and divisions in Bangladesh.
+
+With a clean user interface, Bengali number formatting, category-based browsing, and secure authentication, Bazar Dor aims to provide a simple and accessible experience for everyday users.
+
+---
+
+## ✨ Key Features
+
+### 🛍️ Market Price Information
+
+- 📊 **Daily Commodity Prices** — View the latest available prices of essential products.
+- 🗂️ **Category-Based Browsing** — Explore products by categories such as rice, lentils, oil, vegetables, fish, meat, dairy, and spices.
+- 🔍 **Detailed Product Information** — View individual product prices and market information.
+- 📈 **Price Change Indicators** — Identify price increases and decreases using color-coded indicators.
+- 📅 **Historical Price Comparison** — Compare today's prices with yesterday's, last week's, and last month's prices.
+- 🏪 **Market-Based Price Comparison** — Explore minimum, maximum, and average prices across different markets.
+- ↕️ **Product Sorting** — Sort products by price in ascending or descending order.
+
+### 🇧🇩 Bengali-Friendly Experience
+
+- Bengali-language interface.
+- Bengali number and currency formatting.
+- Bengali date display.
+- Local market and division information.
+- Responsive layouts for mobile, tablet, and desktop devices.
+
+### 🔐 Authentication & User Management
+
+- Email and password authentication using Better Auth.
+- Google and GitHub social sign-in.
+- Session-based authentication.
+- Dynamic navigation based on authentication status.
+- User profile page.
+- Update profile name.
+- Secure sign-out functionality.
+
+---
+
+## 🖼️ Screenshots
+
+Add screenshots of your application to a `screenshots` folder inside the `public` directory.
+
+### 🏠 Homepage
+
+![Homepage](./public/screenshots/home.png)
+
+### 🛒 Product Details
+
+![Product Details](./public/screenshots/product-details.png)
+
+### 🔐 Authentication
+
+![Sign In Page](./public/screenshots/sign-in.png)
+
+### 👤 User Profile
+
+![Profile Page](./public/screenshots/profile.png)
+
+> **Note:** Replace these screenshot paths with the actual images you add to your project.
+
+---
+
+## 🛠️ Technology Stack
+
+| Technology         | Purpose                                    |
+| ------------------ | ------------------------------------------ |
+| **Next.js 16**     | Full-stack React framework and App Router  |
+| **React 19**       | Component-based user interface             |
+| **TypeScript**     | Static typing and improved maintainability |
+| **Tailwind CSS 4** | Responsive styling                         |
+| **HeroUI**         | Reusable UI components                     |
+| **Better Auth**    | Authentication and session management      |
+| **MongoDB**        | Authentication-related database storage    |
+| **React Icons**    | Google, GitHub, and other icons            |
+| **Lucide React**   | Interface icons                            |
+| **REST API**       | Fetching market and product information    |
+
+---
+
+## 🌐 API Integration
+
+Bazar Dor uses a REST API to retrieve product categories, prices, and market information.
+
+**Base URL:**
+
+```text
+https://openapi.programming-hero.com/api/bazardor
+```
+
+### Available Endpoints
+
+| Endpoint                 | Description                                |
+| ------------------------ | ------------------------------------------ |
+| `/categories`            | Retrieve product categories                |
+| `/products`              | Retrieve all products                      |
+| `/products?category=tel` | Retrieve products from a specific category |
+| `/products/10`           | Retrieve details of a single product       |
+
+### Example Product Data
+
+```json
+{
+  "id": 10,
+  "slug": "pam-tel",
+  "nameBn": "পাম তেল",
+  "category": "tel",
+  "unit": "kg",
+  "today": 168,
+  "yesterday": 172,
+  "lastWeek": 175,
+  "lastMonth": 178,
+  "change": {
+    "dir": "down",
+    "pct": -2.3
+  }
+}
+```
+
+The application formats the retrieved information into a user-friendly Bengali interface.
+
+---
+
+## 📂 Project Structure
+
+```text
+bazar-dor/
+│
+├── public/
+│   └── screenshots/
+│
+├── src/
+│   ├── app/
+│   │   ├── page.tsx
+│   │   ├── layout.tsx
+│   │   ├── globals.css
+│   │   │
+│   │   ├── category/
+│   │   │   └── [categoryId]/
+│   │   │       └── page.tsx
+│   │   │
+│   │   ├── product/
+│   │   │   └── [productId]/
+│   │   │       └── page.tsx
+│   │   │
+│   │   ├── signIn/
+│   │   │   └── page.tsx
+│   │   │
+│   │   ├── signUp/
+│   │   │   └── page.tsx
+│   │   │
+│   │   └── profile/
+│   │       └── page.tsx
+│   │
+│   ├── components/
+│   │   ├── shared/
+│   │   │   ├── Navbar.tsx
+│   │   │   ├── NavbarAuth.tsx
+│   │   │   └── BanglaDate.tsx
+│   │   │
+│   │   └── productSummaryPage/
+│   │       ├── ProductSummary.tsx
+│   │       └── MarketBasedPrice.tsx
+│   │
+│   ├── lib/
+│   │   ├── auth.ts
+│   │   ├── auth-client.ts
+│   │   └── formatBangla.ts
+│   │
+│   └── types/
+│
+├── .env.local
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+> This is an illustrative structure based on the main features. Adjust it to match your actual project folders.
+
+---
+
+## 🚀 Installation and Setup
+
+Follow these steps to run the project locally.
+
+### 1. Clone the Repository
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
+
+### 2. Navigate to the Project Directory
+
+```bash
+cd bazar-dor
+```
+
+### 3. Install Dependencies
+
+```bash
+npm install
+```
+
+### 4. Configure Environment Variables
+
+Create a `.env.local` file in the project root.
+
+```env
+BETTER_AUTH_SECRET=your_better_auth_secret
+BETTER_AUTH_URL=http://localhost:3000
+
+BETTER_AUTH_DB_URL=your_mongodb_connection_string
+
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+```
+
+Make sure the variable names match those used in your authentication configuration.
+
+**Security:** Never commit `.env.local` or actual credentials to GitHub.
+
+### 5. Start the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 6. Open the Application
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Visit:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```text
+http://localhost:3000
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🧠 What I Learned
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Building Bazar Dor helped me practice and improve my understanding of:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Next.js App Router and dynamic routing.
+- React Server Components and Client Components.
+- TypeScript interfaces and type-safe API integration.
+- Data fetching and caching in Next.js.
+- Reusable React component architecture.
+- Responsive UI design with Tailwind CSS.
+- HeroUI component customization.
+- Authentication using Better Auth.
+- Session management and conditional rendering.
+- Google and GitHub OAuth integration.
+- MongoDB integration for authentication.
+- Form validation and error handling.
+- Bengali localization and number formatting.
+- Sorting, filtering, and processing API data.
+- Managing loading states and asynchronous operations.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔮 Future Improvements
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Some possible enhancements for the project include:
+
+- 🔎 Product search functionality.
+- ⭐ Save favorite products.
+- 📉 Interactive historical price charts.
+- 📍 Location-based market filtering.
+- 🔔 Price change notifications.
+- 🌙 Dark mode support.
+- 🌐 Bengali and English language switching.
+- 📱 Progressive Web App (PWA) support.
+
+---
+
+## 👩‍💻 Author
+
+**Mahjabin Jannat**
+
+🎓 Computer Science & Engineering Graduate  
+💻 Aspiring Frontend Developer  
+🌱 Learning modern web development with React, Next.js, and TypeScript
+
+### 🔗 Connect With Me
+
+- **GitHub:** [Mahjabin Jannat](https://github.com/Mahjabinjannat)
+- **Project Repository:** [Bazar Dor](YOUR_GITHUB_REPOSITORY_URL)
+- **Live Website:** [Visit Bazar Dor](YOUR_LIVE_WEBSITE_URL)
+
+---
+
+<div align="center">
+
+### 💚 Made with care for everyday shoppers in Bangladesh
+
+**বাজার দর — নিত্যপ্রয়োজনীয় পণ্যের দাম জানুন সহজেই।**
+
+⭐ If you find this project useful, consider giving it a star!
+
+</div>
