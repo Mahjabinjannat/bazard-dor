@@ -209,6 +209,7 @@ const SignInPage = () => {
 
                 <Link
                   href="/forgot-password"
+                  prefetch={false}
                   className="text-[12px] font-semibold text-[#008C45] transition hover:underline"
                 >
                   পাসওয়ার্ড ভুলে গেছেন?
