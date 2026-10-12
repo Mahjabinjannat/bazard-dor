@@ -16,7 +16,7 @@
 
 <br />
 
-[🌐 Live Website](YOUR_LIVE_WEBSITE_URL) • [💻 Source Code](YOUR_GITHUB_REPOSITORY_URL)
+[🌐 Live Website](https://bazar-dor-six-pi.vercel.app/) • [💻 Source Code](https://github.com/Mahjabinjannat/bazard-dor)
 
 </div>
 
