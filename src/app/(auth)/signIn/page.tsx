@@ -117,6 +117,7 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   Button,
   FieldError,
@@ -130,58 +131,83 @@ import Link from "next/link";
 import { signIn } from "@/lib/auth-client";
 
 const SignInPage = () => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isLoading) return;
+
     setIsLoading(true);
+
     try {
       const formData = new FormData(e.currentTarget);
-      const data = Object.fromEntries(formData.entries()) as {
-        email: string;
-        password: string;
-      };
-      console.log(data);
-      const { data: resData, error } = await signIn.email({
-        email: data.email,
-        password: data.password,
+
+      const email = String(formData.get("email") ?? "").trim();
+      const password = String(formData.get("password") ?? "");
+
+      const { data, error } = await signIn.email({
+        email,
+        password,
         rememberMe: true,
-        callbackURL: "/",
       });
-      toast.success("Login Successful");
-      console.log(resData, error);
-    } catch (e) {
-      toast.danger("Login Failed");
+
+      if (error) {
+        toast.danger(
+          error.code === "INVALID_EMAIL_OR_PASSWORD"
+            ? "ইমেইল অথবা পাসওয়ার্ড সঠিক নয়!"
+            : error.message || "সাইন ইন করা যায়নি।",
+        );
+        return;
+      }
+
+      if (!data) {
+        toast.danger("সাইন ইন করা যায়নি। আবার চেষ্টা করুন।");
+        return;
+      }
+
+      toast.success("সফলভাবে সাইন ইন হয়েছে!");
+
+      router.replace("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Login error:", error);
+
+      toast.danger("সাইন ইন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
     } finally {
       setIsLoading(false);
     }
   };
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
     try {
-      const data = await signIn.social({
+      const { error } = await signIn.social({
         provider: "google",
+        callbackURL: "/?auth=google",
       });
-      toast.success("Google Login Successful");
-      console.log(data);
-    } catch (e) {
-      toast.danger("Login Failed");
-    } finally {
-      setIsLoading(false);
+
+      if (error) {
+        toast.danger(error.message || "Google সাইন ইন ব্যর্থ হয়েছে!");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.danger("Google সাইন ইন করতে সমস্যা হয়েছে!");
     }
   };
   const handleGithubSignIn = async () => {
-    setIsLoading(true);
     try {
-      const data = await signIn.social({
+      const { error } = await signIn.social({
         provider: "github",
+        callbackURL: "/?auth=github",
       });
-      toast.success("Github login successful");
-      console.log(data);
-    } catch (e) {
-      toast.danger("Login Failed");
-    } finally {
-      setIsLoading(false);
+
+      if (error) {
+        toast.danger(error.message || "GitHub সাইন ইন ব্যর্থ হয়েছে!");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.danger("GitHub সাইন ইন করতে সমস্যা হয়েছে!");
     }
   };
 
@@ -189,7 +215,7 @@ const SignInPage = () => {
     <main className="min-h-screen bg-[#F0F5F0] px-4 py-12 sm:py-16">
       <div className="mx-auto w-full max-w-[460px]">
         <div className="mb-8 text-center">
-          <h1 className="text-[28px] font-extrabold tracking-tight text-[#1D281F]">
+          <h1 className="text-[24px] font-extrabold tracking-tight text-[#1D281F] sm:text-[28px] lg:text-[32px]">
             সাইন ইন
           </h1>
 
@@ -200,7 +226,7 @@ const SignInPage = () => {
           </p>
         </div>
 
-        <div className="rounded-[22px] border border-[#DDE7DE] bg-[#FAF9F6] p-6 shadow-[0_10px_35px_rgba(25,70,35,0.05)] sm:p-8">
+        <div className="rounded-[16px] border border-[#DDE7DE] bg-[#FAF9F6] p-4 shadow-[0_10px_35px_rgba(25,70,35,0.05)] sm:rounded-[22px] sm:p-8">
           <Form onSubmit={handleSignIn} className="flex w-full flex-col gap-5">
             <TextField isRequired name="email" type="email" className="w-full">
               <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
@@ -221,7 +247,7 @@ const SignInPage = () => {
               type={showPassword ? "text" : "password"}
               className="w-full"
             >
-              <div className="mb-2 flex w-full items-center justify-between gap-3">
+              <div className="mb-2 flex w-full flex-wrap items-center justify-between gap-2">
                 <Label className="text-[14px] font-semibold text-[#253329]">
                   পাসওয়ার্ড
                 </Label>
@@ -257,9 +283,9 @@ const SignInPage = () => {
             <Button
               type="submit"
               isDisabled={isLoading}
-              className="mt-2 flex w-full items-center justify-center rounded-xl bg-[#008C45] py-3.5 text-[15px] font-bold text-white transition hover:bg-[#007338]"
+              className="mt-2 flex w-full items-center justify-center rounded-xl bg-[#008C45] py-3.5 text-[15px] font-bold text-white transition hover:bg-[#007338] disabled:opacity-60"
             >
-              সাইন ইন করুন
+              {isLoading ? "সাইন ইন হচ্ছে..." : "সাইন ইন"}
             </Button>
 
             <div className="flex w-full items-center gap-4 py-1">

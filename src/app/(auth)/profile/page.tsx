@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { authClient, signOut, updateUser, useSession } from "@/lib/auth-client";
+import { signOut, updateUser, useSession } from "@/lib/auth-client";
 import {
   UserRound,
   Mail,
@@ -22,20 +22,15 @@ export default function ProfilePage() {
     refetch,
   } = useSession();
 
-  const [name, setName] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const [editedName, setEditedName] = useState<string | null>(null);
+
   const user = session?.user;
-
-  //   useEffect(() => {
-  //     if (user?.name) {
-  //       setName(user.name);
-  //     }
-  //   }, [user?.name]);
-
+  const name = editedName ?? user?.name ?? "";
   useEffect(() => {
     if (!isPending && !sessionError && !user) {
       router.replace("/signIn");
@@ -73,6 +68,7 @@ export default function ProfilePage() {
       }
 
       await refetch();
+      setEditedName(null);
       router.refresh();
       toast.success("আপনার নাম সফলভাবে পরিবর্তন হয়েছে!");
 
@@ -125,47 +121,187 @@ export default function ProfilePage() {
 
   const initial = user.name?.trim().charAt(0).toUpperCase() || "U";
 
+  //   return (
+  //     <main className="min-h-screen bg-[#F0F5F0] px-4 py-10 sm:py-14">
+  //       <div className="mx-auto max-w-[1100px]">
+  //         <div className="mb-9">
+  //           <div className="mb-3 flex items-center gap-2 text-[#008C45]">
+  //             <UserRound size={19} />
+  //             <span className="text-sm font-semibold">আমার অ্যাকাউন্ট</span>
+  //           </div>
+
+  //           <h1 className="text-[30px] font-extrabold tracking-tight text-[#1D281F] sm:text-[38px]">
+  //             আমার প্রোফাইল
+  //           </h1>
+
+  //           <p className="mt-2 text-[15px] text-[#6F796F] sm:text-[17px]">
+  //             আপনার অ্যাকাউন্টের তথ্য এখানে দেখুন।
+  //           </p>
+  //         </div>
+
+  //         <section className="mb-7 rounded-[22px] border border-[#DDE7DE] bg-white p-6 shadow-[0_4px_24px_rgba(20,70,35,0.025)] sm:p-8">
+  //           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+  //             <div className="flex min-w-0 items-center gap-5">
+  //               <div className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-full bg-[#008C45] text-[34px] font-semibold text-white shadow-sm sm:h-[88px] sm:w-[88px]">
+  //                 {initial}
+  //               </div>
+
+  //               <div className="min-w-0">
+  //                 <h2 className="truncate text-[21px] font-bold text-[#1D281F] sm:text-[27px]">
+  //                   {user.name}
+  //                 </h2>
+
+  //                 <div className="mt-2 flex min-w-0 items-center gap-2 text-[#6F796F]">
+  //                   <Mail size={16} className="shrink-0" />
+
+  //                   <p className="truncate text-[13px] sm:text-[16px]">
+  //                     {user.email}
+  //                   </p>
+  //                 </div>
+
+  //                 {user.emailVerified && (
+  //                   <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#E8F5EB] px-3 py-1 text-[12px] font-medium text-[#008C45]">
+  //                     <ShieldCheck size={14} />
+  //                     ইমেইল যাচাইকৃত
+  //                   </div>
+  //                 )}
+  //               </div>
+  //             </div>
+
+  //             <button
+  //               type="button"
+  //               onClick={handleSignOut}
+  //               disabled={isSigningOut}
+  //               className="flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#E43D3D] bg-white px-5 py-3 text-[15px] font-semibold text-[#E43D3D] transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+  //             >
+  //               {isSigningOut ? (
+  //                 <LoaderCircle size={18} className="animate-spin" />
+  //               ) : (
+  //                 <LogOut size={18} />
+  //               )}
+
+  //               {isSigningOut ? "সাইন আউট হচ্ছে..." : "সাইন আউট"}
+  //             </button>
+  //           </div>
+  //         </section>
+
+  //         <section className="rounded-[22px] border border-[#DDE7DE] bg-white p-6 shadow-[0_4px_24px_rgba(20,70,35,0.025)] sm:p-8">
+  //           <div className="mb-7">
+  //             <h2 className="text-[22px] font-bold text-[#1D281F] sm:text-[26px]">
+  //               নাম হালনাগাদ করুন
+  //             </h2>
+
+  //             <p className="mt-2 text-[13px] text-[#829084]">
+  //               আপনার প্রোফাইলে প্রদর্শিত নাম পরিবর্তন করুন।
+  //             </p>
+  //           </div>
+
+  //           <form onSubmit={handleUpdateName} className="space-y-5">
+  //             <div>
+  //               <label
+  //                 htmlFor="profile-name"
+  //                 className="mb-2 block text-[15px] font-semibold text-[#253329]"
+  //               >
+  //                 নাম
+  //               </label>
+
+  //               <input
+  //                 id="profile-name"
+  //                 type="text"
+  //                 value={name}
+  //                 onChange={(e) => {
+  //                   setName(e.target.value);
+  //                   setMessage("");
+  //                   setError("");
+  //                 }}
+  //                 placeholder="আপনার নাম লিখুন"
+  //                 minLength={3}
+  //                 maxLength={100}
+  //                 required
+  //                 className="w-full rounded-xl border border-[#D5DED5] bg-[#FAFCFA] px-4 py-3.5 text-[15px] text-[#1D281F] outline-none transition placeholder:text-[#A3ADA4] focus:border-[#008C45] focus:ring-2 focus:ring-[#008C45]/10"
+  //               />
+  //             </div>
+  //             {/*
+  //             {message && (
+  //               <p
+  //                 role="status"
+  //                 className="rounded-lg bg-[#E8F5EB] px-4 py-3 text-sm text-[#087B3E]"
+  //               >
+  //                 {message}
+  //               </p>
+  //             )}
+
+  //             {error && (
+  //               <p
+  //                 role="alert"
+  //                 className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"
+  //               >
+  //                 {error}
+  //               </p>
+  //             )} */}
+
+  //             <button
+  //               type="submit"
+  //               disabled={isUpdating || name.trim() === user.name}
+  //               className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#008C45] px-6 py-3.5 text-[15px] font-bold text-white shadow-sm transition hover:bg-[#007338] disabled:cursor-not-allowed disabled:opacity-50"
+  //             >
+  //               {isUpdating ? (
+  //                 <LoaderCircle size={18} className="animate-spin" />
+  //               ) : (
+  //                 <Save size={18} />
+  //               )}
+
+  //               {isUpdating ? "সংরক্ষণ হচ্ছে..." : "নাম হালনাগাদ করুন"}
+  //             </button>
+  //           </form>
+  //         </section>
+  //       </div>
+  //     </main>
+  //   );
+
   return (
-    <main className="min-h-screen bg-[#F0F5F0] px-4 py-10 sm:py-14">
-      <div className="mx-auto max-w-[1100px]">
-        <div className="mb-9">
-          <div className="mb-3 flex items-center gap-2 text-[#008C45]">
-            <UserRound size={19} />
-            <span className="text-sm font-semibold">আমার অ্যাকাউন্ট</span>
+    <main className="min-h-[70vh] bg-[#F0F5F0] px-4 py-6 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
+      <div className="mx-auto w-full max-w-[1100px]">
+        <div className="mb-6 sm:mb-8 lg:mb-9">
+          <div className="mb-2 flex items-center gap-2 text-[#008C45] sm:mb-3">
+            <UserRound size={18} />
+            <span className="text-[12px] font-semibold sm:text-sm">
+              আমার অ্যাকাউন্ট
+            </span>
           </div>
 
-          <h1 className="text-[30px] font-extrabold tracking-tight text-[#1D281F] sm:text-[38px]">
+          <h1 className="text-[24px] font-extrabold tracking-tight text-[#1D281F] sm:text-[32px] lg:text-[38px]">
             আমার প্রোফাইল
           </h1>
 
-          <p className="mt-2 text-[15px] text-[#6F796F] sm:text-[17px]">
+          <p className="mt-2 text-[13px] leading-6 text-[#6F796F] sm:text-[15px] lg:text-[17px]">
             আপনার অ্যাকাউন্টের তথ্য এখানে দেখুন।
           </p>
         </div>
 
-        <section className="mb-7 rounded-[22px] border border-[#DDE7DE] bg-white p-6 shadow-[0_4px_24px_rgba(20,70,35,0.025)] sm:p-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-5">
-              <div className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-full bg-[#008C45] text-[34px] font-semibold text-white shadow-sm sm:h-[88px] sm:w-[88px]">
+        <section className="mb-5 rounded-[16px] border border-[#DDE7DE] bg-white p-4 shadow-[0_4px_24px_rgba(20,70,35,0.025)] sm:mb-7 sm:rounded-[22px] sm:p-6 lg:p-8">
+          <div className="flex flex-col gap-5 sm:gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="flex min-w-0 items-center gap-3 sm:gap-5">
+              <div className="flex h-[58px] w-[58px] shrink-0 items-center justify-center rounded-full bg-[#008C45] text-[26px] font-semibold text-white shadow-sm sm:h-[76px] sm:w-[76px] sm:text-[34px] lg:h-[88px] lg:w-[88px]">
                 {initial}
               </div>
 
-              <div className="min-w-0">
-                <h2 className="truncate text-[21px] font-bold text-[#1D281F] sm:text-[27px]">
+              <div className="min-w-0 flex-1">
+                <h2 className="truncate text-[18px] font-bold text-[#1D281F] sm:text-[23px] lg:text-[27px]">
                   {user.name}
                 </h2>
 
-                <div className="mt-2 flex min-w-0 items-center gap-2 text-[#6F796F]">
-                  <Mail size={16} className="shrink-0" />
+                <div className="mt-1.5 flex min-w-0 items-center gap-2 text-[#6F796F] sm:mt-2">
+                  <Mail size={15} className="shrink-0" />
 
-                  <p className="truncate text-[13px] sm:text-[16px]">
+                  <p className="min-w-0 truncate text-[12px] sm:text-[14px] lg:text-[16px]">
                     {user.email}
                   </p>
                 </div>
 
                 {user.emailVerified && (
-                  <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-[#E8F5EB] px-3 py-1 text-[12px] font-medium text-[#008C45]">
-                    <ShieldCheck size={14} />
+                  <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#E8F5EB] px-2.5 py-1 text-[10px] font-medium text-[#008C45] sm:mt-3 sm:px-3 sm:text-[12px]">
+                    <ShieldCheck size={13} />
                     ইমেইল যাচাইকৃত
                   </div>
                 )}
@@ -176,7 +312,7 @@ export default function ProfilePage() {
               type="button"
               onClick={handleSignOut}
               disabled={isSigningOut}
-              className="flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#E43D3D] bg-white px-5 py-3 text-[15px] font-semibold text-[#E43D3D] transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[#E43D3D] bg-white px-4 py-2.5 text-[13px] font-semibold text-[#E43D3D] transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5 sm:py-3 sm:text-[15px] md:w-auto"
             >
               {isSigningOut ? (
                 <LoaderCircle size={18} className="animate-spin" />
@@ -189,22 +325,22 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="rounded-[22px] border border-[#DDE7DE] bg-white p-6 shadow-[0_4px_24px_rgba(20,70,35,0.025)] sm:p-8">
-          <div className="mb-7">
-            <h2 className="text-[22px] font-bold text-[#1D281F] sm:text-[26px]">
+        <section className="rounded-[16px] border border-[#DDE7DE] bg-white p-4 shadow-[0_4px_24px_rgba(20,70,35,0.025)] sm:rounded-[22px] sm:p-6 lg:p-8">
+          <div className="mb-5 sm:mb-7">
+            <h2 className="text-[19px] font-bold text-[#1D281F] sm:text-[23px] lg:text-[26px]">
               নাম হালনাগাদ করুন
             </h2>
 
-            <p className="mt-2 text-[13px] text-[#829084]">
+            <p className="mt-2 text-[12px] leading-5 text-[#829084] sm:text-[13px]">
               আপনার প্রোফাইলে প্রদর্শিত নাম পরিবর্তন করুন।
             </p>
           </div>
 
-          <form onSubmit={handleUpdateName} className="space-y-5">
+          <form onSubmit={handleUpdateName} className="space-y-4 sm:space-y-5">
             <div>
               <label
                 htmlFor="profile-name"
-                className="mb-2 block text-[15px] font-semibold text-[#253329]"
+                className="mb-2 block text-[13px] font-semibold text-[#253329] sm:text-[15px]"
               >
                 নাম
               </label>
@@ -214,7 +350,7 @@ export default function ProfilePage() {
                 type="text"
                 value={name}
                 onChange={(e) => {
-                  setName(e.target.value);
+                  setEditedName(e.target.value);
                   setMessage("");
                   setError("");
                 }}
@@ -222,32 +358,23 @@ export default function ProfilePage() {
                 minLength={3}
                 maxLength={100}
                 required
-                className="w-full rounded-xl border border-[#D5DED5] bg-[#FAFCFA] px-4 py-3.5 text-[15px] text-[#1D281F] outline-none transition placeholder:text-[#A3ADA4] focus:border-[#008C45] focus:ring-2 focus:ring-[#008C45]/10"
+                className="w-full rounded-xl border border-[#D5DED5] bg-[#FAFCFA] px-4 py-3.5 text-[15px] text-[#1D281F] outline-none transition focus:border-[#008C45]"
               />
             </div>
-            {/* 
-            {message && (
-              <p
-                role="status"
-                className="rounded-lg bg-[#E8F5EB] px-4 py-3 text-sm text-[#087B3E]"
-              >
-                {message}
-              </p>
-            )}
 
             {error && (
               <p
                 role="alert"
-                className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600"
+                className="rounded-lg bg-red-50 px-4 py-3 text-[12px] text-red-600 sm:text-sm"
               >
                 {error}
               </p>
-            )} */}
+            )}
 
             <button
               type="submit"
               disabled={isUpdating || name.trim() === user.name}
-              className="flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#008C45] px-6 py-3.5 text-[15px] font-bold text-white shadow-sm transition hover:bg-[#007338] disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#008C45] px-5 py-3 text-[13px] font-bold text-white shadow-sm transition hover:bg-[#007338] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6 sm:py-3.5 sm:text-[15px]"
             >
               {isUpdating ? (
                 <LoaderCircle size={18} className="animate-spin" />

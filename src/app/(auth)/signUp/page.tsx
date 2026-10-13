@@ -182,88 +182,313 @@ export default function SignUpPage() {
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isLoading) {
+
+    if (isLoading) return;
+
+    const formData = new FormData(e.currentTarget);
+
+    const data = Object.fromEntries(formData.entries()) as {
+      name: string;
+      email: string;
+      password: string;
+      confirmPassword: string;
+    };
+
+    if (data.password !== data.confirmPassword) {
+      toast.danger("পাসওয়ার্ড দুটি মিলছে না!");
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      const formData = new FormData(e.currentTarget);
-      const data = Object.fromEntries(formData.entries()) as {
-        name: string;
-        email: string;
-        password: string;
-        confirmPassword: string;
-      };
-      console.log(data);
-
-      if (data.password !== data.confirmPassword) {
-        toast.danger("পাসওয়ার্ড দুটি মিলছে না!");
-        return;
-      }
-      setIsLoading(true);
-
-      const { data: resData, error } = await signUp.email({
-        name: data.name,
-        email: data.email,
+      const { data: result, error } = await signUp.email({
+        name: data.name.trim(),
+        email: data.email.trim(),
         password: data.password,
-        callbackURL: "/",
       });
 
       if (error) {
-        toast.danger(error.message || "অ্যাকাউন্ট তৈরি করা যায়নি!");
+        if (
+          error.code === "USER_ALREADY_EXISTS" ||
+          error.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL"
+        ) {
+          toast.danger("এই ইমেইল দিয়ে ইতিমধ্যে অ্যাকাউন্ট তৈরি করা হয়েছে!");
+        } else {
+          toast.danger(
+            error.message || "অ্যাকাউন্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।",
+          );
+        }
+        return;
+      }
+
+      if (!result) {
+        toast.danger("অ্যাকাউন্ট তৈরি করা যায়নি। আবার চেষ্টা করুন।");
         return;
       }
 
       toast.success("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে!");
+
       router.replace("/");
       router.refresh();
     } catch (error) {
       console.error("Signup error:", error);
-      toast.danger("সাইন আপ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+      toast.danger("সার্ভারে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
-    const { error } = await signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
+    if (isLoading) return;
 
-    if (error) {
-      toast.danger(error.message || "Google দিয়ে সাইন ইন করা যায়নি");
+    setIsLoading(true);
+
+    try {
+      const { error } = await signIn.social({
+        provider: "google",
+        callbackURL: "/?auth=google",
+      });
+
+      if (error) {
+        toast.danger(error.message || "Google দিয়ে সাইন ইন করা যায়নি!");
+      }
+    } catch (error) {
+      console.error("Google authentication error:", error);
+      toast.danger("Google সাইন ইন করতে সমস্যা হয়েছে!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGithubSignIn = async () => {
-    const { error } = await signIn.social({
-      provider: "github",
-      callbackURL: "/",
-    });
+    if (isLoading) return;
 
-    if (error) {
-      toast.danger(error.message || "GitHub দিয়ে সাইন ইন করা যায়নি");
+    setIsLoading(true);
+
+    try {
+      const { error } = await signIn.social({
+        provider: "github",
+        callbackURL: "/?auth=github",
+      });
+
+      if (error) {
+        toast.danger(error.message || "GitHub দিয়ে সাইন ইন করা যায়নি!");
+      }
+    } catch (error) {
+      console.error("GitHub authentication error:", error);
+      toast.danger("GitHub সাইন ইন করতে সমস্যা হয়েছে!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  //
+
+  //     <main className="min-h-screen bg-[#F0F5F0] px-4 py-12 sm:py-16">
+  //       <div className="mx-auto w-full max-w-[460px]">
+  //         <div className="mb-8 text-center">
+  //           <h1 className="text-[28px] font-extrabold tracking-tight text-[#1D281F]">
+  //             অ্যাকাউন্ট তৈরি করুন
+  //           </h1>
+
+  //           <p className="mt-2 text-[14px] leading-6 text-[#718075]">
+  //             বিনা খরচে সাইন আপ করে প্রতিদিনের বাজারদর,
+  //             <br className="hidden sm:block" />
+  //             দামের পরিবর্তন ও বিস্তারিত তথ্য জানুন।
+  //           </p>
+  //         </div>
+
+  //         <div className="rounded-[22px] border border-[#DDE7DE] bg-[#FAF9F6] p-6 shadow-[0_10px_35px_rgba(25,70,35,0.05)] sm:p-8">
+  //           <Form onSubmit={handleSignUp} className="flex w-full flex-col gap-5">
+  //             <TextField
+  //               isRequired
+  //               name="name"
+  //               className="w-full"
+  //               validate={(value) =>
+  //                 value.trim().length < 3 ? "নাম কমপক্ষে ৩ অক্ষরের হতে হবে" : null
+  //               }
+  //             >
+  //               <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
+  //                 আপনার নাম
+  //               </Label>
+
+  //               <Input
+  //                 placeholder="যেমন: রহিম উদ্দিন"
+  //                 className="w-full rounded-xl border border-[#DDE5DD] bg-white px-4 py-3 text-[14px] outline-none transition focus:border-[#008C45]"
+  //               />
+
+  //               <FieldError className="mt-1 text-xs text-red-600" />
+  //             </TextField>
+
+  //             <TextField isRequired name="email" type="email" className="w-full">
+  //               <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
+  //                 ইমেইল
+  //               </Label>
+
+  //               <Input
+  //                 placeholder="you@example.com"
+  //                 className="w-full rounded-xl border border-[#DDE5DD] bg-white px-4 py-3 text-[14px] outline-none transition focus:border-[#008C45]"
+  //               />
+
+  //               <FieldError className="mt-1 text-xs text-red-600" />
+  //             </TextField>
+
+  //             <TextField
+  //               isRequired
+  //               name="password"
+  //               type={showPassword ? "text" : "password"}
+  //               className="w-full"
+  //               onChange={setPassword}
+  //               validate={(value) => {
+  //                 if (value.length < 8)
+  //                   return "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে";
+  //                 if (!/[A-Z]/.test(value))
+  //                   return "অন্তত একটি বড় হাতের ইংরেজি অক্ষর দিন";
+  //                 if (!/[0-9]/.test(value)) return "অন্তত একটি সংখ্যা দিন";
+  //                 return null;
+  //               }}
+  //             >
+  //               <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
+  //                 পাসওয়ার্ড
+  //               </Label>
+
+  //               <div className="relative w-full">
+  //                 <Input
+  //                   placeholder="পাসওয়ার্ড লিখুন"
+  //                   className="w-full rounded-xl border border-[#DDE5DD] bg-white px-4 py-3 pr-12 text-[14px] outline-none transition focus:border-[#008C45]"
+  //                 />
+
+  //                 <button
+  //                   type="button"
+  //                   aria-label={showPassword ? "Hide password" : "Show password"}
+  //                   onClick={() => setShowPassword(!showPassword)}
+  //                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A968C] hover:text-[#008C45]"
+  //                 >
+  //                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+  //                 </button>
+  //               </div>
+
+  //               <Description className="mt-1 text-[12px] text-[#8A968C]">
+  //                 কমপক্ষে ৮ অক্ষর, একটি বড় হাতের অক্ষর ও একটি সংখ্যা
+  //               </Description>
+
+  //               <FieldError className="mt-1 text-xs text-red-600" />
+  //             </TextField>
+
+  //             <TextField
+  //               isRequired
+  //               name="confirmPassword"
+  //               type={showConfirmPassword ? "text" : "password"}
+  //               className="w-full"
+  //               validate={(value) =>
+  //                 value !== password ? "দুটি পাসওয়ার্ড মিলছে না" : null
+  //               }
+  //             >
+  //               <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
+  //                 পাসওয়ার্ড নিশ্চিত করুন
+  //               </Label>
+
+  //               <div className="relative w-full">
+  //                 <Input
+  //                   placeholder="পাসওয়ার্ড আবার লিখুন"
+  //                   className="w-full rounded-xl border border-[#DDE5DD] bg-white px-4 py-3 pr-12 text-[14px] outline-none transition focus:border-[#008C45]"
+  //                 />
+
+  //                 <button
+  //                   type="button"
+  //                   aria-label={
+  //                     showConfirmPassword
+  //                       ? "Hide confirmation password"
+  //                       : "Show confirmation password"
+  //                   }
+  //                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+  //                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A968C] hover:text-[#008C45]"
+  //                 >
+  //                   {showConfirmPassword ? (
+  //                     <EyeOff size={18} />
+  //                   ) : (
+  //                     <Eye size={18} />
+  //                   )}
+  //                 </button>
+  //               </div>
+
+  //               <FieldError className="mt-1 text-xs text-red-600" />
+  //             </TextField>
+
+  //             <Button
+  //               type="submit"
+  //               isDisabled={isLoading}
+  //               className="mt-1 flex w-full items-center justify-center rounded-xl bg-[#008C45] py-3.5 text-[15px] font-bold text-white transition hover:bg-[#007338]"
+  //             >
+  //               {isLoading ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "অ্যাকাউন্ট তৈরি করুন"}
+  //             </Button>
+
+  //             <div className="flex w-full items-center gap-4 py-1">
+  //               <div className="h-px flex-1 bg-[#DFE7DF]" />
+  //               <span className="text-[13px] text-[#929C94]">অথবা</span>
+  //               <div className="h-px flex-1 bg-[#DFE7DF]" />
+  //             </div>
+
+  //             <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
+  //               <Button
+  //                 type="button"
+  //                 variant="outline"
+  //                 isDisabled={isLoading}
+  //                 onClick={handleGoogleSignIn}
+  //                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
+  //               >
+  //                 <FcGoogle size={21} />
+  //                 Google
+  //               </Button>
+
+  //               <Button
+  //                 type="button"
+  //                 variant="outline"
+  //                 isDisabled={isLoading}
+  //                 onClick={handleGithubSignIn}
+  //                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
+  //               >
+  //                 <FaGithub size={20} />
+  //                 GitHub
+  //               </Button>
+  //             </div>
+  //           </Form>
+
+  //           <p className="mt-7 text-center text-[14px] text-[#718075]">
+  //             অ্যাকাউন্ট আছে?{" "}
+  //             <Link
+  //               href="/signIn"
+  //               className="font-bold text-[#008C45] hover:underline"
+  //             >
+  //               সাইন ইন করুন
+  //             </Link>
+  //           </p>
+  //         </div>
+  //       </div>
+  //     </main>
+  //   );
+
   return (
-    <main className="min-h-screen bg-[#F0F5F0] px-4 py-12 sm:py-16">
+    <main className="min-h-[70vh] bg-[#F0F5F0] px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
       <div className="mx-auto w-full max-w-[460px]">
-        <div className="mb-8 text-center">
-          <h1 className="text-[28px] font-extrabold tracking-tight text-[#1D281F]">
+        <div className="mb-6 text-center sm:mb-8">
+          <h1 className="text-[24px] font-extrabold tracking-tight text-[#1D281F] sm:text-[28px] lg:text-[32px]">
             অ্যাকাউন্ট তৈরি করুন
           </h1>
 
-          <p className="mt-2 text-[14px] leading-6 text-[#718075]">
+          <p className="mt-2 text-[12px] leading-6 text-[#718075] sm:text-[14px]">
             বিনা খরচে সাইন আপ করে প্রতিদিনের বাজারদর,
-            <br className="hidden sm:block" />
-            দামের পরিবর্তন ও বিস্তারিত তথ্য জানুন।
+            <br className="hidden sm:block" /> দামের পরিবর্তন ও বিস্তারিত তথ্য
+            জানুন।
           </p>
         </div>
 
-        <div className="rounded-[22px] border border-[#DDE7DE] bg-[#FAF9F6] p-6 shadow-[0_10px_35px_rgba(25,70,35,0.05)] sm:p-8">
-          <Form onSubmit={handleSignUp} className="flex w-full flex-col gap-5">
+        <div className="rounded-[16px] border border-[#DDE7DE] bg-[#FAF9F6] p-4 shadow-[0_10px_35px_rgba(25,70,35,0.05)] sm:rounded-[22px] sm:p-8">
+          <Form
+            onSubmit={handleSignUp}
+            className="flex w-full flex-col gap-4 sm:gap-5"
+          >
             <TextField
               isRequired
               name="name"
@@ -272,26 +497,27 @@ export default function SignUpPage() {
                 value.trim().length < 3 ? "নাম কমপক্ষে ৩ অক্ষরের হতে হবে" : null
               }
             >
-              <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
+              <Label className="mb-2 text-[13px] font-semibold text-[#253329] sm:text-[14px]">
                 আপনার নাম
               </Label>
 
               <Input
                 placeholder="যেমন: রহিম উদ্দিন"
-                className="w-full rounded-xl border border-[#DDE5DD] bg-white px-4 py-3 text-[14px] outline-none transition focus:border-[#008C45]"
+                className="w-full rounded-xl border border-[#DDE5DD] bg-white px-3 py-3 text-[14px] outline-none transition focus:border-[#008C45] sm:px-4"
               />
 
               <FieldError className="mt-1 text-xs text-red-600" />
             </TextField>
 
+            {/* Email */}
             <TextField isRequired name="email" type="email" className="w-full">
-              <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
+              <Label className="mb-2 text-[13px] font-semibold text-[#253329] sm:text-[14px]">
                 ইমেইল
               </Label>
 
               <Input
                 placeholder="you@example.com"
-                className="w-full rounded-xl border border-[#DDE5DD] bg-white px-4 py-3 text-[14px] outline-none transition focus:border-[#008C45]"
+                className="w-full rounded-xl border border-[#DDE5DD] bg-white px-3 py-3 text-[14px] outline-none transition focus:border-[#008C45] sm:px-4"
               />
 
               <FieldError className="mt-1 text-xs text-red-600" />
@@ -306,33 +532,36 @@ export default function SignUpPage() {
               validate={(value) => {
                 if (value.length < 8)
                   return "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে";
+
                 if (!/[A-Z]/.test(value))
                   return "অন্তত একটি বড় হাতের ইংরেজি অক্ষর দিন";
+
                 if (!/[0-9]/.test(value)) return "অন্তত একটি সংখ্যা দিন";
+
                 return null;
               }}
             >
-              <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
+              <Label className="mb-2 text-[13px] font-semibold text-[#253329] sm:text-[14px]">
                 পাসওয়ার্ড
               </Label>
 
               <div className="relative w-full">
                 <Input
                   placeholder="পাসওয়ার্ড লিখুন"
-                  className="w-full rounded-xl border border-[#DDE5DD] bg-white px-4 py-3 pr-12 text-[14px] outline-none transition focus:border-[#008C45]"
+                  className="w-full rounded-xl border border-[#DDE5DD] bg-white px-3 py-3 pr-12 text-[14px] outline-none transition focus:border-[#008C45] sm:px-4"
                 />
 
                 <button
                   type="button"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A968C] hover:text-[#008C45]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#8A968C] transition hover:text-[#008C45] sm:right-4"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
 
-              <Description className="mt-1 text-[12px] text-[#8A968C]">
+              <Description className="mt-1 text-[11px] leading-5 text-[#8A968C] sm:text-[12px]">
                 কমপক্ষে ৮ অক্ষর, একটি বড় হাতের অক্ষর ও একটি সংখ্যা
               </Description>
 
@@ -348,14 +577,14 @@ export default function SignUpPage() {
                 value !== password ? "দুটি পাসওয়ার্ড মিলছে না" : null
               }
             >
-              <Label className="mb-2 text-[14px] font-semibold text-[#253329]">
+              <Label className="mb-2 text-[13px] font-semibold text-[#253329] sm:text-[14px]">
                 পাসওয়ার্ড নিশ্চিত করুন
               </Label>
 
               <div className="relative w-full">
                 <Input
                   placeholder="পাসওয়ার্ড আবার লিখুন"
-                  className="w-full rounded-xl border border-[#DDE5DD] bg-white px-4 py-3 pr-12 text-[14px] outline-none transition focus:border-[#008C45]"
+                  className="w-full rounded-xl border border-[#DDE5DD] bg-white px-3 py-3 pr-12 text-[14px] outline-none transition focus:border-[#008C45] sm:px-4"
                 />
 
                 <button
@@ -366,7 +595,7 @@ export default function SignUpPage() {
                       : "Show confirmation password"
                   }
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A968C] hover:text-[#008C45]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[#8A968C] transition hover:text-[#008C45] sm:right-4"
                 >
                   {showConfirmPassword ? (
                     <EyeOff size={18} />
@@ -382,14 +611,18 @@ export default function SignUpPage() {
             <Button
               type="submit"
               isDisabled={isLoading}
-              className="mt-1 flex w-full items-center justify-center rounded-xl bg-[#008C45] py-3.5 text-[15px] font-bold text-white transition hover:bg-[#007338]"
+              className="mt-1 flex w-full items-center justify-center rounded-xl bg-[#008C45] px-3 py-3.5 text-[13px] font-bold text-white transition hover:bg-[#007338] disabled:opacity-60 sm:text-[15px]"
             >
               {isLoading ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "অ্যাকাউন্ট তৈরি করুন"}
             </Button>
 
-            <div className="flex w-full items-center gap-4 py-1">
+            <div className="flex w-full items-center gap-3 py-1 sm:gap-4">
               <div className="h-px flex-1 bg-[#DFE7DF]" />
-              <span className="text-[13px] text-[#929C94]">অথবা</span>
+
+              <span className="shrink-0 text-[12px] text-[#929C94] sm:text-[13px]">
+                অথবা
+              </span>
+
               <div className="h-px flex-1 bg-[#DFE7DF]" />
             </div>
 
@@ -399,7 +632,7 @@ export default function SignUpPage() {
                 variant="outline"
                 isDisabled={isLoading}
                 onClick={handleGoogleSignIn}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white px-3 py-3 text-[13px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4] sm:text-[14px]"
               >
                 <FcGoogle size={21} />
                 Google
@@ -410,7 +643,7 @@ export default function SignUpPage() {
                 variant="outline"
                 isDisabled={isLoading}
                 onClick={handleGithubSignIn}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white py-3 text-[14px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#DDE5DD] bg-white px-3 py-3 text-[13px] font-semibold text-[#253329] transition hover:bg-[#F4F7F4] sm:text-[14px]"
               >
                 <FaGithub size={20} />
                 GitHub
@@ -418,11 +651,11 @@ export default function SignUpPage() {
             </div>
           </Form>
 
-          <p className="mt-7 text-center text-[14px] text-[#718075]">
+          <p className="mt-6 text-center text-[12px] leading-6 text-[#718075] sm:mt-7 sm:text-[14px]">
             অ্যাকাউন্ট আছে?{" "}
             <Link
               href="/signIn"
-              className="font-bold text-[#008C45] hover:underline"
+              className="font-bold text-[#008C45] transition hover:underline"
             >
               সাইন ইন করুন
             </Link>
