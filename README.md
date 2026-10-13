@@ -84,8 +84,6 @@ Add screenshots of your application to a `screenshots` folder inside the `public
 
 ![Profile Page](./public/screenshots/profile.png)
 
-> **Note:** Replace these screenshot paths with the actual images you add to your project.
-
 ---
 
 ## 🛠️ Technology Stack
@@ -153,56 +151,101 @@ The application formats the retrieved information into a user-friendly Bengali i
 ```text
 bazar-dor/
 │
+├── .next/
+├── .vercel/
+├── node_modules/
+│
 ├── public/
 │   └── screenshots/
 │
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx
-│   │   ├── layout.tsx
-│   │   ├── globals.css
+│   │   ├── (auth)/
+│   │   │   ├── signIn/
+│   │   │   │   └── page.tsx
+│   │   │   ├── signUp/
+│   │   │   │   └── page.tsx
+│   │   │   └── profile/
+│   │   │       └── page.tsx
 │   │   │
 │   │   ├── category/
 │   │   │   └── [categoryId]/
-│   │   │       └── page.tsx
+│   │   │       ├── page.tsx
+│   │   │       └── loading.tsx
 │   │   │
 │   │   ├── product/
 │   │   │   └── [productId]/
-│   │   │       └── page.tsx
+│   │   │       ├── page.tsx
+│   │   │       └── loading.tsx
 │   │   │
-│   │   ├── signIn/
-│   │   │   └── page.tsx
+│   │   ├── api/
+│   │   │   └── auth/
+│   │   │       └── [...all]/
+│   │   │           └── route.ts
 │   │   │
-│   │   ├── signUp/
-│   │   │   └── page.tsx
-│   │   │
-│   │   └── profile/
-│   │       └── page.tsx
+│   │   ├── page.tsx
+│   │   ├── layout.tsx
+│   │   ├── globals.css
+│   │   ├── loading.tsx
+│   │   └── not-found.tsx
 │   │
 │   ├── components/
 │   │   ├── shared/
+│   │   │   ├── Footer.tsx
+│   │   │   ├── Marquee.tsx
+│   │   │   ├── ProductCard.tsx
+│   │   │   ├── EmptyState.tsx
+│   │   │   ├── Categories.tsx
+│   │   │   ├── BanglaDate.tsx
 │   │   │   ├── Navbar.tsx
-│   │   │   ├── NavbarAuth.tsx
-│   │   │   └── BanglaDate.tsx
+│   │   │   └── NavbarAuth.tsx
 │   │   │
-│   │   └── productSummaryPage/
-│   │       ├── ProductSummary.tsx
-│   │       └── MarketBasedPrice.tsx
+│   │   ├── homePage/
+│   │   │   ├── AllProducts.tsx
+│   │   │   ├── Banner.tsx
+│   │   │   ├── PriceUpdate.tsx
+│   │   │   ├── PriceIncreased.tsx
+│   │   │   └── PriceDecreased.tsx
+│   │   │
+│   │   ├── categorizedProducts/
+│   │   │   ├── CategoryProductList.tsx
+│   │   │   └── Dropdown.tsx
+│   │   │
+│   │   ├── productSummaryPage/
+│   │   │   ├── ProductSummary.tsx
+│   │   │   └── MarketBasedPrice.tsx
+│   │   │
+│   │   └── auth/
+│   │       └── AuthSuccessToast.tsx
 │   │
 │   ├── lib/
 │   │   ├── auth.ts
+│   │   ├── api.ts
 │   │   ├── auth-client.ts
+│   │   ├── categories.ts
+│   │   ├── categorizedProduct.ts
+│   │   ├── products.ts
+│   │   ├── productDetails.ts
 │   │   └── formatBangla.ts
 │   │
-│   └── types/
+│   ├── types/
+│   │   ├── market.ts
+│   │   ├── category.ts
+│   │   └── product.ts
+│   │
+│   └── proxy.ts
 │
-├── .env.local
+├── .env
+├── .gitignore
+├── AGENTS.md
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
 ├── package.json
+├── package-lock.json
 ├── tsconfig.json
 └── README.md
 ```
-
-> This is an illustrative structure based on the main features. Adjust it to match your actual project folders.
 
 ---
 
