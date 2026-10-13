@@ -273,13 +273,13 @@ npm install
 
 ### 4. Configure Environment Variables
 
-Create a `.env.local` file in the project root.
+Create a `.env` file in the project root.
 
 ```env
 BETTER_AUTH_SECRET=your_better_auth_secret
 BETTER_AUTH_URL=http://localhost:3000
 
-BETTER_AUTH_DB_URL=your_mongodb_connection_string
+MONGODB_URL=your_mongodb_connection_string
 
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
@@ -356,8 +356,8 @@ Some possible enhancements for the project include:
 ### 🔗 Connect With Me
 
 - **GitHub:** [Mahjabin Jannat](https://github.com/Mahjabinjannat)
-- **Project Repository:** [Bazar Dor](YOUR_GITHUB_REPOSITORY_URL)
-- **Live Website:** [Visit Bazar Dor](YOUR_LIVE_WEBSITE_URL)
+- **Project Repository:** [Bazar Dor](https://github.com/Mahjabinjannat/bazard-dor)
+- **Live Website:** [Visit Bazar Dor](https://bazar-dor-six-pi.vercel.app/)
 
 ---
 
