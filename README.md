@@ -146,66 +146,69 @@ The application formats the retrieved information into a user-friendly Bengali i
 
 ---
 
-## 📂 Project Structure
+## 📁 Project Structure
 
 ```text
 bazar-dor/
 │
-├── .next/
-├── .vercel/
-├── node_modules/
+├── .next/                         # Next.js build files (generated)
+├── .vercel/                       # Vercel deployment configuration
+├── node_modules/                  # Installed dependencies
 │
-├── public/
-│   └── screenshots/
+├── public/                        # Public static assets
+│   └── screenshots/               # Project screenshots
 │
 ├── src/
 │   ├── app/
-│   │   ├── (auth)/
+│   │   │
+│   │   ├── (home)/                # Homepage route group
+│   │   │   ├── page.tsx           # Homepage (/)
+│   │   │   └── loading.tsx        # Homepage loading skeleton
+│   │   │
+│   │   ├── (auth)/                # Authentication route group
 │   │   │   ├── signIn/
-│   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx       # Sign-in page
 │   │   │   ├── signUp/
-│   │   │   │   └── page.tsx
+│   │   │   │   └── page.tsx       # Sign-up page
 │   │   │   └── profile/
-│   │   │       └── page.tsx
+│   │   │       └── page.tsx       # User profile page
 │   │   │
 │   │   ├── category/
 │   │   │   └── [categoryId]/
-│   │   │       ├── page.tsx
-│   │   │       └── loading.tsx
+│   │   │       ├── page.tsx       # Category products page
+│   │   │       └── loading.tsx    # Category loading skeleton
 │   │   │
 │   │   ├── product/
 │   │   │   └── [productId]/
-│   │   │       ├── page.tsx
-│   │   │       └── loading.tsx
+│   │   │       ├── page.tsx       # Product details page
+│   │   │       └── loading.tsx    # Product loading skeleton
 │   │   │
 │   │   ├── api/
 │   │   │   └── auth/
 │   │   │       └── [...all]/
-│   │   │           └── route.ts
+│   │   │           └── route.ts   # Better Auth API handler
 │   │   │
-│   │   ├── page.tsx
-│   │   ├── layout.tsx
-│   │   ├── globals.css
-│   │   ├── loading.tsx
-│   │   └── not-found.tsx
+│   │   ├── layout.tsx             # Root layout
+│   │   ├── globals.css            # Global styles
+│   │   └── not-found.tsx          # Custom 404 page
 │   │
 │   ├── components/
 │   │   ├── shared/
+│   │   │   ├── Navbar.tsx
+│   │   │   ├── NavbarAuth.tsx
 │   │   │   ├── Footer.tsx
 │   │   │   ├── Marquee.tsx
+│   │   │   ├── Categories.tsx
 │   │   │   ├── ProductCard.tsx
 │   │   │   ├── EmptyState.tsx
-│   │   │   ├── Categories.tsx
-│   │   │   ├── BanglaDate.tsx
-│   │   │   ├── Navbar.tsx
-│   │   │   └── NavbarAuth.tsx
+│   │   │   └── BanglaDate.tsx
 │   │   │
 │   │   ├── homePage/
-│   │   │   ├── AllProducts.tsx
 │   │   │   ├── Banner.tsx
 │   │   │   ├── PriceUpdate.tsx
 │   │   │   ├── PriceIncreased.tsx
-│   │   │   └── PriceDecreased.tsx
+│   │   │   ├── PriceDecreased.tsx
+│   │   │   └── AllProducts.tsx
 │   │   │
 │   │   ├── categorizedProducts/
 │   │   │   ├── CategoryProductList.tsx
@@ -219,33 +222,56 @@ bazar-dor/
 │   │       └── AuthSuccessToast.tsx
 │   │
 │   ├── lib/
-│   │   ├── auth.ts
-│   │   ├── api.ts
-│   │   ├── auth-client.ts
-│   │   ├── categories.ts
-│   │   ├── categorizedProduct.ts
-│   │   ├── products.ts
-│   │   ├── productDetails.ts
-│   │   └── formatBangla.ts
+│   │   ├── api.ts                 # API configuration
+│   │   ├── auth.ts                # Better Auth server configuration
+│   │   ├── auth-client.ts         # Better Auth client configuration
+│   │   ├── categories.ts          # Category data fetching
+│   │   ├── categorizedProduct.ts  # Category-wise products
+│   │   ├── products.ts            # Product data fetching
+│   │   ├── productDetails.ts      # Individual product details
+│   │   └── formatBangla.ts        # Bengali number/text formatting
 │   │
 │   ├── types/
-│   │   ├── market.ts
-│   │   ├── category.ts
-│   │   └── product.ts
+│   │   ├── product.ts             # Product interfaces
+│   │   ├── category.ts            # Category interfaces
+│   │   └── market.ts              # Market interfaces
 │   │
-│   └── proxy.ts
+│   └── proxy.ts                   # Next.js proxy / route protection
 │
-├── .env
-├── .gitignore
-├── AGENTS.md
-├── eslint.config.mjs
-├── next-env.d.ts
-├── next.config.ts
-├── package.json
-├── package-lock.json
-├── tsconfig.json
-└── README.md
+├── .env                            # Environment variables (private)
+├── .gitignore                      # Git ignored files
+├── AGENTS.md                        # Project instructions
+├── eslint.config.mjs               # ESLint configuration
+├── next-env.d.ts                    # Next.js TypeScript declarations
+├── next.config.ts                   # Next.js configuration
+├── package.json                     # Project dependencies and scripts
+├── package-lock.json                # Dependency lock file
+├── tsconfig.json                    # TypeScript configuration
+└── README.md                        # Project documentation
 ```
+
+### 🧭 Routing Overview
+
+| Route                    | Description                   |
+| ------------------------ | ----------------------------- |
+| `/`                      | Homepage                      |
+| `/signIn`                | User sign-in                  |
+| `/signUp`                | User registration             |
+| `/profile`               | User profile                  |
+| `/category/[categoryId]` | Category-wise product listing |
+| `/product/[productId]`   | Individual product details    |
+
+### ⚡ Loading & Streaming
+
+The application uses Next.js App Router's `loading.tsx` convention and React Suspense for route-specific loading states.
+
+- **Homepage:** `(home)/loading.tsx`
+- **Category page:** `category/[categoryId]/loading.tsx`
+- **Product details:** `product/[productId]/loading.tsx`
+
+Shared layout components such as the Navbar, Categories, Marquee, and Footer are managed separately from page-specific loading boundaries.
+
+> **Note:** The `(home)` and `(auth)` directories are Next.js route groups. Their names do not appear in application URLs.
 
 ---
 
