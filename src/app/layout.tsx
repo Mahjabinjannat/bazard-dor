@@ -32,10 +32,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-[#F0F5F0]">
         <Navbar />
-        <Suspense fallback={<p>প্রোডাক্ট লোড হচ্ছে...</p>}>
+        <Suspense fallback={null}>
           <Categories />
         </Suspense>
-        <Suspense fallback={<p>ক্যাটাগরি লোড হচ্ছে...</p>}>
+
+        <Suspense fallback={null}>
           <Marquee />
         </Suspense>
 
