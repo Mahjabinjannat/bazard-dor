@@ -73,6 +73,47 @@
 
 // export default Navbar;
 
+// import Image from "next/image";
+// import logo from "@/assests/logo-icon.png";
+// import BanglaDate from "./BanglaDate";
+// import NavbarAuth from "./NavbarAuth";
+// import { Suspense } from "react";
+// import Link from "next/link";
+
+// const Navbar = () => {
+//   return (
+//     <div>
+//       <div className="flex justify-between container mx-auto py-4 items-center">
+//         <Link href="/" className="flex gap-2 items-center">
+//           <Image
+//             src={logo}
+//             alt="logo"
+//             width={40}
+//             height={40}
+//             className="bg-green-900 rounded-[6px] h-[40px]"
+//           />
+
+//           <div>
+//             <h1 className="font-bold text-[18px] leading-tight">
+//               বাজার দর
+//             </h1>
+
+//             <Suspense fallback={<span>তারিখ লোড হচ্ছে...</span>}>
+//               <BanglaDate />
+//             </Suspense>
+//           </div>
+//         </Link>
+
+//         <NavbarAuth />
+//       </div>
+
+//       <hr className="border-0 border-t border-gray-200" />
+//     </div>
+//   );
+// };
+
+// export default Navbar;
+
 import Image from "next/image";
 import logo from "@/assests/logo-icon.png";
 import BanglaDate from "./BanglaDate";
@@ -82,33 +123,41 @@ import Link from "next/link";
 
 const Navbar = () => {
   return (
-    <div>
-      <div className="flex justify-between container mx-auto py-4 items-center">
-        <Link href="/" className="flex gap-2 items-center">
+    <header className="w-full bg-[#FAF9F6]">
+      <div className="container mx-auto flex min-h-[70px] items-center justify-between gap-2 px-4 py-3 sm:min-h-[80px] sm:gap-4 sm:px-6 sm:py-4 lg:px-8">
+        <Link
+          href="/"
+          className="flex min-w-0 shrink items-center gap-2 sm:gap-3"
+        >
           <Image
             src={logo}
-            alt="logo"
+            alt="বাজার দর"
             width={40}
             height={40}
-            className="bg-green-900 rounded-[6px] h-[40px]"
+            priority
+            className="h-9 w-9 shrink-0 rounded-[6px] bg-green-900 object-contain sm:h-10 sm:w-10"
           />
 
-          <div>
-            <h1 className="font-bold text-[18px] leading-tight">
+          <div className="min-w-0">
+            <h1 className="whitespace-nowrap text-[16px] font-bold leading-tight text-[#1D281F] sm:text-[18px]">
               বাজার দর
             </h1>
 
-            <Suspense fallback={<span>তারিখ লোড হচ্ছে...</span>}>
-              <BanglaDate />
-            </Suspense>
+            <div className="mt-0.5 hidden text-[11px] text-gray-500 min-[380px]:block sm:text-[12px]">
+              <Suspense fallback={<span>তারিখ লোড হচ্ছে...</span>}>
+                <BanglaDate />
+              </Suspense>
+            </div>
           </div>
         </Link>
 
-        <NavbarAuth />
+        <div className="flex shrink-0 items-center">
+          <NavbarAuth />
+        </div>
       </div>
 
-      <hr className="border-0 border-t border-gray-200" />
-    </div>
+      <div className="border-b border-[#DDE7DE]" />
+    </header>
   );
 };
 

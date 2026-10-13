@@ -1,3 +1,129 @@
+// "use client";
+
+// import Link from "next/link";
+// import { useRouter } from "next/navigation";
+// import { useState } from "react";
+// import { authClient, useSession } from "@/lib/auth-client";
+// import { Button, Dropdown, Label, Spinner, toast } from "@heroui/react";
+// import { ChevronDown, LogOut, UserRound } from "lucide-react";
+
+// export default function NavbarAuth() {
+//   const { data: session, isPending, error } = useSession();
+//   const [isSigningOut, setIsSigningOut] = useState(false);
+//   const router = useRouter();
+
+//   const handleSignOut = async () => {
+//     setIsSigningOut(true);
+
+//     try {
+//       const { error } = await authClient.signOut();
+
+//       toast.success("Sign out successful");
+
+//       if (error) {
+//         console.error("Sign out failed:", error.message);
+//         toast.danger("sign out failed");
+//         return;
+//       }
+
+//       router.push("/signIn");
+//       router.refresh();
+//     } finally {
+//       setIsSigningOut(false);
+//     }
+//   };
+
+//   if (isPending) {
+//     return <Spinner size="sm" />;
+//   }
+
+//   if (error) {
+//     return <span className="text-sm text-red-500">Session error</span>;
+//   }
+
+//   if (!session?.user) {
+//     return (
+//       <div className="flex items-center gap-4">
+//         <Link
+//           href="/signIn"
+//           className="text-sm font-semibold text-[#1D281F] hover:text-green-700"
+//         >
+//           সাইন ইন
+//         </Link>
+
+//         <Link
+//           href="/signUp"
+//           className="rounded-xl bg-[#008C45] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#007338]"
+//         >
+//           সাইন আপ
+//         </Link>
+//       </div>
+//     );
+//   }
+
+//   const user = session.user;
+//   const initial = user.name?.trim().charAt(0).toUpperCase() || "U";
+
+//   return (
+//     <Dropdown>
+//       <Button
+//         variant="ghost"
+//         className="flex h-auto items-center gap-3 rounded-xl px-2 py-2 hover:bg-[#EAF3EC]"
+//       >
+//         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#008C45] text-[16px] font-bold text-white">
+//           {initial}
+//         </span>
+
+//         <span className="hidden text-[15px] font-semibold text-[#1D281F] sm:block">
+//           {user.name}
+//         </span>
+
+//         <ChevronDown size={15} className="text-[#7D897F]" />
+//       </Button>
+
+//       <Dropdown.Popover
+//         placement="bottom end"
+//         className="w-[260px] rounded-2xl border border-[#E1E8E1] bg-white p-2 shadow-lg"
+//       >
+//         <div className="border-b border-[#E9EEE9] px-3 py-3">
+//           <p className="truncate text-[14px] font-bold text-[#1D281F]">
+//             {user.name}
+//           </p>
+//           <p className="mt-1 truncate text-[12px] text-[#819084]">
+//             {user.email}
+//           </p>
+//         </div>
+
+//         <Dropdown.Menu
+//           aria-label="User account menu"
+//           onAction={(key) => {
+//             if (key === "profile") router.push("/profile");
+
+//             if (key === "signout") void handleSignOut();
+//           }}
+//         >
+//           <Dropdown.Item id="profile" textValue="Profile">
+//             <UserRound size={17} />
+//             <Link href="/profile">
+//               <Label>আমার প্রোফাইল</Label>
+//             </Link>
+//           </Dropdown.Item>
+
+//           <Dropdown.Item
+//             id="signout"
+//             textValue="Sign out"
+//             isDisabled={isSigningOut}
+//             className="text-red-600"
+//           >
+//             <LogOut size={17} />
+//             <Label>{isSigningOut ? "সাইন আউট হচ্ছে..." : "সাইন আউট"}</Label>
+//           </Dropdown.Item>
+//         </Dropdown.Menu>
+//       </Dropdown.Popover>
+//     </Dropdown>
+//   );
+// }
+
 "use client";
 
 import Link from "next/link";
@@ -5,7 +131,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient, useSession } from "@/lib/auth-client";
 import { Button, Dropdown, Label, Spinner, toast } from "@heroui/react";
-import { ChevronDown, LogOut, UserRound, LayoutDashboard } from "lucide-react";
+import { ChevronDown, LogOut, UserRound } from "lucide-react";
 
 export default function NavbarAuth() {
   const { data: session, isPending, error } = useSession();
@@ -13,47 +139,57 @@ export default function NavbarAuth() {
   const router = useRouter();
 
   const handleSignOut = async () => {
+    if (isSigningOut) return;
+
     setIsSigningOut(true);
 
     try {
       const { error } = await authClient.signOut();
 
-      toast.success("Sign out successful");
-
       if (error) {
-        console.error("Sign out failed:", error.message);
-        toast.danger("sign out failed");
+        toast.danger(error.message || "সাইন আউট করা যায়নি!");
         return;
       }
 
-      router.push("/");
+      toast.success("সফলভাবে সাইন আউট হয়েছে!");
+
+      router.replace("/signIn");
       router.refresh();
+    } catch (error) {
+      console.error("Sign out error:", error);
+      toast.danger("সাইন আউট করতে সমস্যা হয়েছে!");
     } finally {
       setIsSigningOut(false);
     }
   };
 
   if (isPending) {
-    return <Spinner size="sm" />;
+    return (
+      <div className="flex h-10 w-10 items-center justify-center">
+        <Spinner size="sm" />
+      </div>
+    );
   }
 
   if (error) {
-    return <span className="text-sm text-red-500">Session error</span>;
+    return (
+      <span className="text-xs text-red-500 sm:text-sm">Session error</span>
+    );
   }
 
   if (!session?.user) {
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         <Link
           href="/signIn"
-          className="text-sm font-semibold text-[#1D281F] hover:text-green-700"
+          className="whitespace-nowrap text-[12px] font-semibold text-[#1D281F] transition hover:text-green-700 sm:text-sm"
         >
           সাইন ইন
         </Link>
 
         <Link
           href="/signUp"
-          className="rounded-xl bg-[#008C45] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#007338]"
+          className="whitespace-nowrap rounded-lg bg-[#008C45] px-3 py-2 text-[12px] font-semibold text-white transition hover:bg-[#007338] sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-sm"
         >
           সাইন আপ
         </Link>
@@ -68,27 +204,29 @@ export default function NavbarAuth() {
     <Dropdown>
       <Button
         variant="ghost"
-        className="flex h-auto items-center gap-3 rounded-xl px-2 py-2 hover:bg-[#EAF3EC]"
+        aria-label="অ্যাকাউন্ট মেনু"
+        className="flex h-auto min-w-0 items-center gap-1 rounded-xl px-1.5 py-1.5 transition hover:bg-[#EAF3EC] sm:gap-2 sm:px-2 sm:py-2"
       >
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#008C45] text-[16px] font-bold text-white">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#008C45] text-[15px] font-bold text-white sm:h-10 sm:w-10 sm:text-[16px]">
           {initial}
         </span>
 
-        <span className="hidden text-[15px] font-semibold text-[#1D281F] sm:block">
+        <span className="hidden max-w-[120px] truncate text-[14px] font-semibold text-[#1D281F] md:block lg:max-w-[180px] lg:text-[15px]">
           {user.name}
         </span>
 
-        <ChevronDown size={15} className="text-[#7D897F]" />
+        <ChevronDown size={15} className="shrink-0 text-[#7D897F]" />
       </Button>
 
       <Dropdown.Popover
         placement="bottom end"
-        className="w-[260px] rounded-2xl border border-[#E1E8E1] bg-white p-2 shadow-lg"
+        className="w-[min(260px,calc(100vw-24px))] rounded-2xl border border-[#E1E8E1] bg-white p-2 shadow-lg"
       >
         <div className="border-b border-[#E9EEE9] px-3 py-3">
           <p className="truncate text-[14px] font-bold text-[#1D281F]">
             {user.name}
           </p>
+
           <p className="mt-1 truncate text-[12px] text-[#819084]">
             {user.email}
           </p>
@@ -97,16 +235,18 @@ export default function NavbarAuth() {
         <Dropdown.Menu
           aria-label="User account menu"
           onAction={(key) => {
-            if (key === "profile") router.push("/profile");
+            if (key === "profile") {
+              router.push("/profile");
+            }
 
-            if (key === "signout") void handleSignOut();
+            if (key === "signout") {
+              void handleSignOut();
+            }
           }}
         >
           <Dropdown.Item id="profile" textValue="Profile">
             <UserRound size={17} />
-            <Link href="/profile">
-              <Label>আমার প্রোফাইল</Label>
-            </Link>
+            <Label>আমার প্রোফাইল</Label>
           </Dropdown.Item>
 
           <Dropdown.Item
@@ -116,6 +256,7 @@ export default function NavbarAuth() {
             className="text-red-600"
           >
             <LogOut size={17} />
+
             <Label>{isSigningOut ? "সাইন আউট হচ্ছে..." : "সাইন আউট"}</Label>
           </Dropdown.Item>
         </Dropdown.Menu>
